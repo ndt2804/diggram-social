@@ -19,12 +19,19 @@ const deleteCookie = (name) => {
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+    const [friends, setFriends] = useState([]);
 
     // Hàm đăng nhập
     const login = async (email, password) => {
         try {
-            const { user, accessToken } = await AuthService.login(email, password);
-            setUser(user);
+            const response = await AuthService.login(email, password);
+
+            // Thiết lập cookie đã được thực hiện trong AuthService.login
+            // Không cần thiết phải thiết lập cookie ở đây nữa
+
+            // Cập nhật state
+            const { existingUser, accessToken } = response;
+            setUser(existingUser);
             setToken(accessToken);
         } catch (error) {
             console.error('Login failed:', error.message);
@@ -49,13 +56,18 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userData = AuthService.getCurrentUser();
+                const [userData, friendData] = await Promise.all([
+                    AuthService.getCurrentUser(),
+                    AuthService.getFriendUser()
+                ]);
+                setFriends(friendData);
                 setUser(userData);
                 setToken(getCookie('accessToken'));
             } catch (error) {
                 // Xóa token nếu không thể lấy thông tin người dùng
                 deleteCookie('accessToken');
-                deleteCookie('refreshToken'); deleteCookie('user');
+                deleteCookie('refreshToken');
+                deleteCookie('user');
 
             }
         };
@@ -64,7 +76,7 @@ const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, token, login, logout, friends }}>
             {children}
         </AuthContext.Provider>
     );

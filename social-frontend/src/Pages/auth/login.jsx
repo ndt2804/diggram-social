@@ -3,7 +3,8 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/auth.service";
 import { AuthContext } from "../../context/auth.context";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
     const { login } = useContext(AuthContext);
     const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ const Login = () => {
             setError('Login failed. Please check your credentials.');
         }
     };
+
     return (
         <>
             <section className="w-3/4 mx-auto flex flex-col gap-10">
@@ -180,6 +182,8 @@ const Login = () => {
                             or sign up
                         </a>
                         <span className="w-1/5 border-b dark:border-gray-400 md:w-1/4"></span>
+
+                        {error && <p>{error}</p>}
                     </div>
                 </form>
             </section>

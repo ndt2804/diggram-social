@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:2080/api/v1/auth/";
+const URL = "http://localhost:2080/api/v1/";
 
 const register = async ({ username, fullname, email, password }) => {
     try {
@@ -47,19 +48,21 @@ const login = async (email, password) => {
             password,
         })
         console.log(`Login response: ${JSON.stringify(response.data)}`);
-        if (response.data.accessToken && response.data.refreshToken) {
-            setCookie('accessToken', response.data.accessToken, 1); // Lưu accessToken
-            setCookie('refreshToken', response.data.refreshToken, 7); // Lưu refreshToken với thời gian sống dài hơn nếu cần
-            setCookie('user', JSON.stringify(response.data.existingUser), 1); // Lưu thông tin người dùng
-            console.log("User logged in successfully");
-        }
 
-        return response.data;
+        const { accessToken, refreshToken, existingUser } = response.data;
+
+        // Lưu token vào cookies
+        setCookie('accessToken', accessToken, { expires: 1 }); // Thời gian sống 1 ngày
+        setCookie('refreshToken', refreshToken, { expires: 7 }); // Thời gian sống 7 ngày
+        setCookie('user', JSON.stringify(existingUser), { expires: 1 }); // Thời gian sống 1 ngày
+
+        return { existingUser, accessToken, refreshToken };
     } catch (error) {
         console.error('Login failed:', error.response ? error.response.data : error.message);
         throw error;
     }
 };
+
 const logout = async () => {
     // Xóa cookie
     deleteCookie('accessToken');
@@ -82,11 +85,23 @@ const getCurrentUser = () => {
     return user ? JSON.parse(user) : null;
 };
 
+const getFriendUser = async () => {
+    try {
+        const response = await axios.get(URL + "friends", { withCredentials: true }
+        )
+        console.log(`Friends: ${JSON.stringify(response.data)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Friends failed:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
 const AuthService = {
     register,
     login,
     logout,
     getCurrentUser,
+    getFriendUser,
 };
 
 export default AuthService;
