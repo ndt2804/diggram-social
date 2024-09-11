@@ -5,25 +5,23 @@ import Home from './Pages/home.jsx'
 import Register from './Pages/auth/register.jsx'
 import Login from './Pages/auth/login.jsx'
 import RootLayout from './Pages/layouts/RootLayout.jsx'
-import './App.css'
+import AuthLayout from './Pages/layouts/AuthLayout.jsx'
+import './index.css'
+
 
 function App() {
   return (
     <>
       <main className='flex h-screen'>
         <Routes>
+          <Route element={<AuthLayout />}>
+            <Route path='/sign-in' element={<Login />} />
+            <Route path='/sign-up' element={<Register />} />
+          </Route>
           <Route element={<RootLayout />}>
 
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
           </Route>
-          {/* public routes */}
-          {/* <Route element={<AuthLayout />}>
-            <Route path='/sign-in' element={<SigninForm />} />
-            <Route path='/sign-up' element={<SignupForm />} />
-          </Route> */}
-
           {/* private routes */}
           {/* <Route element={<RootLayout />}>
             <Route index element={<Home />} />
