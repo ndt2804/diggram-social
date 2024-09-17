@@ -25,11 +25,6 @@ const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await AuthService.login(email, password);
-
-            // Thiết lập cookie đã được thực hiện trong AuthService.login
-            // Không cần thiết phải thiết lập cookie ở đây nữa
-
-            // Cập nhật state
             const { existingUser, accessToken } = response;
             setUser(existingUser);
             setToken(accessToken);
@@ -68,12 +63,14 @@ const AuthProvider = ({ children }) => {
                 deleteCookie('accessToken');
                 deleteCookie('refreshToken');
                 deleteCookie('user');
-
             }
         };
 
-        fetchUser();
-    }, []);
+        if (token) {
+            fetchUser();
+        }
+    }, [token]);
+
 
     return (
         <AuthContext.Provider value={{ user, token, login, logout, friends }}>

@@ -115,12 +115,12 @@ const LeftSidebar = () => {
 
 
             <button
-                variant='ghost'
-                className='shad-button_ghost'
+                className='shad-button_ghost group'
                 onClick={() => handleSignOut()}
             >
-                <img src='./assets/icons/logout.svg' alt='logout' />
-                <p className=''> @{user ? user.username : 'Sign-in'}!</p>
+                <img src='./assets/icons/logout.svg' width={24}
+                    height={24} alt='logout' />
+                <p className='group-hover:text-red-500'> {user ? user.username : 'Sign-in'}!</p>
             </button>
         </nav>
     );

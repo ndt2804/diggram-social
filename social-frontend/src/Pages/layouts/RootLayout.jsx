@@ -14,6 +14,7 @@ const RootLayout = () => {
                 <Outlet />
             </section>
             <RightSidebar />
+            <BottomSidebar />
         </div>
     )
 }

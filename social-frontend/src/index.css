@@ -229,7 +229,7 @@
 
   /* Post Card */
   .post-card {
-    @apply bg-dark-4 rounded-3xl border border-dark-4 p-5 lg:p-7 w-full max-w-screen-sm;
+    @apply rounded-3xl border border-dark-4 p-5 lg:p-7 w-full max-w-screen-sm;
   }
 
   .post-card_img {
@@ -277,6 +277,6 @@
   }
 
   .shad-button_ghost {
-    @apply flex gap-4 items-center justify-start hover:bg-transparent hover:text-white !important;
+    @apply flex gap-4 items-center justify-start !important;
   }
 }
