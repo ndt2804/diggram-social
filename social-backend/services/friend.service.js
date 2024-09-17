@@ -61,12 +61,23 @@ export async function getFriendService(cookie) {
             throw new Error();
         }
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        // const { data: friends, error } = await supabase
+        //     .from("friends")
+        //     .select("*")
+        //     .or(
+        //         `user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`
+        //     ).eq("status", 1)
         const { data: friends, error } = await supabase
-            .from("friends")
-            .select("*")
-            .or(
-                `user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`
-            ).eq("status", 1)
+            .from('friends')
+            .select(`
+            id,
+            created_at,
+            status,
+            blocked,
+            user2:users!user_id_2(username, fullname, email)
+        `)
+            .or(`user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`)
+            .eq('status', 1);
         if (error) {
             console.error("Error user in:", error.message);
             throw new Error("Failed user");
@@ -74,7 +85,21 @@ export async function getFriendService(cookie) {
         if (!friends) {
             throw new Error('Not User');
         }
-        return friends;
+        const friendList = friends.map(friend => ({
+            id: friend.id,
+            created_at: friend.created_at,
+            user2: friend.user2 ? {
+                username: friend.user2.username,
+                fullname: friend.user2.fullname,
+                email: friend.user2.email
+            } : null,
+            status: friend.status,
+            blocked: friend.blocked
+        }));
+
+
+
+        return friendList;
     }
     catch (e) {
         throw new Error('Error when try get User');
