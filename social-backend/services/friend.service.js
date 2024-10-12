@@ -61,12 +61,6 @@ export async function getFriendService(cookie) {
             throw new Error();
         }
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        // const { data: friends, error } = await supabase
-        //     .from("friends")
-        //     .select("*")
-        //     .or(
-        //         `user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`
-        //     ).eq("status", 1)
         const { data: friends, error } = await supabase
             .from('friends')
             .select(`
@@ -74,7 +68,7 @@ export async function getFriendService(cookie) {
             created_at,
             status,
             blocked,
-            user2:users!user_id_2(username, fullname, email)
+            user2:users!user_id_2(username, fullname, email, image_url)
         `)
             .or(`user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`)
             .eq('status', 1);
@@ -91,7 +85,8 @@ export async function getFriendService(cookie) {
             user2: friend.user2 ? {
                 username: friend.user2.username,
                 fullname: friend.user2.fullname,
-                email: friend.user2.email
+                email: friend.user2.email,
+                image_url: friend.user2.image_url
             } : null,
             status: friend.status,
             blocked: friend.blocked
