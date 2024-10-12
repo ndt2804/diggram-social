@@ -29,7 +29,7 @@ const sidebarLinks = [
     },
     {
         imgURL: './assets/images/notification.svg',
-        route: '/notification',
+        route: '/notifications',
         label: 'Notification',
     },
     {
@@ -68,7 +68,7 @@ const LeftSidebar = () => {
 
                 <Link to={`/profile/`} className='flex gap-3 items-center'>
                     <img
-                        src='./assets/icons/camera.svg'
+                        src={user?.image_url || '/default-avatar.png'}
                         alt='profile'
                         className='h-14 w-14 rounded-full'
                     />
@@ -111,9 +111,6 @@ const LeftSidebar = () => {
                     })}
                 </ul>
             </div>
-
-
-
             <button
                 className='shad-button_ghost group'
                 onClick={() => handleSignOut()}

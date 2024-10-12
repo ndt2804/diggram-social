@@ -89,7 +89,6 @@ const getFriendUser = async () => {
     try {
         const response = await axios.get(URL + "friends", { withCredentials: true }
         )
-        console.log(`Friends: ${JSON.stringify(response.data)}`);
         return response.data;
     } catch (error) {
         console.error('Friends failed:', error.response ? error.response.data : error.message);

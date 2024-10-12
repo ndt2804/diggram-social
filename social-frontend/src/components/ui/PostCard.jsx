@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PostStats from './postStats';
+import PostStats from './PostStats.jsx';
 import { useQuery } from '@tanstack/react-query';
 import PostService from '../../services/post.sercive.js';
 const PostCard = () => {

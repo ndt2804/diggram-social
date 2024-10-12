@@ -1,108 +1,91 @@
-import { useEffect, useContext } from 'react'
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useContext, useState, useRef, useEffect } from 'react'
 import { AuthContext } from '../../context/auth.context'
-const sidebarLinks = [
-    {
-        imgURL: './assets/images/home.svg',
-        route: '/',
-        label: 'Home',
-    },
-    {
-        imgURL: './assets/images/search.svg',
-        route: '/search',
-        label: 'Search',
-    },
-    {
-        imgURL: './assets/images/explore.svg',
-        route: '/explore',
-        label: 'Explore',
-    },
-    {
-        imgURL: './assets/images/message.svg',
-        route: '/message',
-        label: 'Message',
-    },
-    {
-        imgURL: './assets/images/saved.svg',
-        route: '/saved',
-        label: 'Saved',
-    },
-    {
-        imgURL: './assets/images/notification.svg',
-        route: '/notification',
-        label: 'Notification',
-    },
-    {
-        imgURL: './assets/images/create.svg',
-        route: '/create-post',
-        label: 'Create Post',
-    },
-]
+import FriendInfoBox from '../ui/FriendBox'
 
 const RightSidebar = () => {
-    const navigate = useNavigate()
-    const { pathname } = useLocation()
     const { friends } = useContext(AuthContext);
+    console.log(friends);
+    const [selectedFriend, setSelectedFriend] = useState(null);
+    const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
+    const sidebarRef = useRef(null);
+
+    const handleFriendClick = (friend, event) => {
+        const sidebarRect = sidebarRef.current.getBoundingClientRect();
+        const clickPosition = event.clientY - sidebarRect.top;
+
+        // Assume FriendInfoBox height is 400px (adjust as needed)
+        const boxHeight = 400;
+        const maxTop = sidebarRect.height - boxHeight;
+
+        let topPosition = clickPosition - boxHeight / 2; // Center the box on click
+        topPosition = Math.max(0, Math.min(topPosition, maxTop)); // Keep within bounds
+
+        setBoxPosition({
+            top: topPosition,
+            left: -320, // Assuming the box width is 320px
+        });
+        setSelectedFriend(friend.user2);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                setSelectedFriend(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     if (friends.length === 0) {
-        return <p>Không có bạn bè nào để hiển thị.</p>;
+        return <p className="p-4">Không có bạn bè nào để hiển thị.</p>;
     }
-    console.log(friends)
+
     return (
-        <nav className="hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px]  border-r "               >
-            <div className='flex flex-col gap-11'>
-                <Link to='/' className='flex gap-3 items-center'>
-                    <img
-                        src='./assets/icons/camera.svg'
-                        alt='logo'
-                        width={170}
-                        height={36}
-                    />
-                </Link>
-
-                <Link to={`/profile/`} className='flex gap-3 items-center'>
-                    <img
-                        src='./assets/icons/camera.svg'
-                        alt='profile'
-                        className='h-14 w-14 rounded-full'
-                    />
-                    <div className='flex flex-col'>
-                    </div>
-                </Link>
-                {friends.length === 0 ? (
-                    <p>Không có bạn bè nào để hiển thị.</p>
-                ) : (
-                    <ul className='flex flex-col gap-6'>
-                        {friends.map((friend) => {
-
-                            return (
-                                <li
-                                    key={friend.id}
-                                    className={`leftsidebar-link group `}
-
-                                >
-                                    <NavLink
-                                        className='flex gap-4 items-center p-4'
-                                    >
-                                        <img
-                                            src={friend.imgURL}
-                                            alt={friend.label}
-                                            className={`group-hover:invert-white group-hover:text-white text-light-3`}
-                                            width={24}
-                                            height={24}
-                                        />
-                                        <span className='group-hover:text-white'>
-                                            {friend.user2.fullname}
-
-                                        </span>
-                                    </NavLink>
-                                </li>
-                            )
-                        })}
+        <div className="relative flex">
+            {selectedFriend && (
+                <FriendInfoBox
+                    friend={selectedFriend}
+                    onClose={() => setSelectedFriend(null)}
+                    style={{
+                        position: 'absolute',
+                        top: `${boxPosition.top}px`,
+                        left: `${boxPosition.left}px`,
+                    }}
+                />
+            )}
+            <nav ref={sidebarRef} className="hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] border-r">
+                <div className='flex flex-col gap-4'>
+                    <h2 className="text-xl font-bold">Friends</h2>
+                    <ul className='flex flex-col gap-4'>
+                        {friends.map((friend) => (
+                            <li
+                                key={friend.id}
+                                className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
+                                onClick={(event) => handleFriendClick(friend, event)}
+                            >
+                                <div className="relative">
+                                    <img
+                                        src={friend.user2.image_url || '/default-avatar.png'}
+                                        alt={friend.user2.fullname}
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
+                                    <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${friend.user2.isOnline ? 'bg-green-500' : 'bg-gray-500'}`}></span>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium">{friend.user2.fullname}</p>
+                                    <p className="text-sm text-gray-500">{friend.user2.status || 'No status'}</p>
+                                </div>
+                            </li>
+                        ))}
                     </ul>
-                )}
-            </div>
-        </nav>
+                </div>
+            </nav>
+        </div>
     );
 }
-export default RightSidebar;
 
+export default RightSidebar;

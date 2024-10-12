@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 
 import LeftSitebar from '../../components/layouts/LeftSidebar'
 import BottomSidebar from '../../components/layouts/BottomSidebar'
@@ -13,7 +13,7 @@ const RootLayout = () => {
             <section className='flex flex-1 h-full'>
                 <Outlet />
             </section>
-            <RightSidebar />
+            {location.pathname === '/' && <RightSidebar />}
             <BottomSidebar />
         </div>
     )
