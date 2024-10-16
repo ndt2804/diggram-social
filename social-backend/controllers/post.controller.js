@@ -18,18 +18,12 @@ export const updatePostController = async (req, res) => {
 
 export const handleCreatePost = async (req, res) => {
     try {
-        const { userId, caption, imageUrl, tags } = req.body;
-
-        if (!userId || !caption || !imageUrl) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        const newPost = await createPost({ userId, caption, imageUrl, tags });
-
-        res.status(201).json(newPost);
+        const { userId, caption } = req.body;
+        const imageFile = req.file;
+        const post = await createPost(userId, caption, imageFile);
+        res.json(post);
     } catch (error) {
-        console.error('Error in handleCreatePost:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
