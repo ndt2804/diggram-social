@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import PostService from '../services/post.service';
+import { AuthContext } from '../context/auth.context';
 
 const CreatePost = () => {
+    const { user } = useContext(AuthContext);
     const [content, setContent] = useState('');
     const [images, setImages] = useState([]);
-
-    // Mock user data (replace with actual user data in a real app)
-    const user = {
-        name: 'John Doe',
-        avatar: 'https://via.placeholder.com/40'
-    };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -25,10 +22,16 @@ const CreatePost = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting post:', { content, images: images.map(img => img.file) });
-        setContent('');
-        setImages([]);
-        alert('Post created successfully!');
+        const imageFile = images.length > 0 ? images[0].file : null;
+        try {
+            const res = await PostService.createPost(user.id, content, imageFile);
+            setContent('');
+            setImages([]);
+            alert('Post created successfully!');
+        } catch (error) {
+            console.error('Error creating post:', error);
+            alert('Failed to create post');
+        }
     };
 
     const renderPreviewImages = () => {
@@ -93,6 +96,7 @@ const CreatePost = () => {
                             </div>
                         ))}
                     </div>
+
                     <button
                         type="submit"
                         className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
@@ -104,8 +108,8 @@ const CreatePost = () => {
                     <h2 className="text-2xl font-bold mb-4">Preview</h2>
                     <div className="border border-gray-300 rounded-md p-4">
                         <div className="flex items-center mb-4">
-                            <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full mr-3" />
-                            <span className="font-semibold">{user.name}</span>
+                            <img src={user.image_url || '/default-avatar.png'} alt={user.name} className="w-10 h-10 rounded-full mr-3" />
+                            <span className="font-semibold">{user.fullname}</span>
                         </div>
                         <p className="mb-4 whitespace-pre-wrap">{content || 'Your content will appear here...'}</p>
                         {renderPreviewImages()}

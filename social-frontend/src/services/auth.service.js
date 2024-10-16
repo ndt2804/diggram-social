@@ -95,12 +95,18 @@ const getFriendUser = async () => {
         throw error;
     }
 }
+
+const getUser = async (username) => {
+    const response = await axios.get(URL + `user/${username}`);
+    return response.data;
+}
 const AuthService = {
     register,
     login,
     logout,
     getCurrentUser,
     getFriendUser,
+    getUser,
 };
 
 export default AuthService;

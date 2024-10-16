@@ -26,6 +26,7 @@ function App() {
           <Route element={<RootLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Me />} />
+            <Route path='/profile/:username/*' element={<Me />} />
             <Route path="/message" element={<MessageComponent />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/search" element={<SearchUser />} />
@@ -36,10 +37,6 @@ function App() {
           {/* private routes */}
           {/* <Route element={<RootLayout />}>
             <Route index element={<Home />} />
-            <Route path='/explore' element={<Explore />} />
-            <Route path='/saved' element={<Saved />} />
-            <Route path='/all-users' element={<AllUsers />} />
-            <Route path='/create-post' element={<CreatePost />} />
             <Route path='/update-post/:id' element={<EditPost />} />
             <Route path='/posts/:id' element={<PostDetails />} />
             <Route path='/profile/:id/*' element={<Profile />} />

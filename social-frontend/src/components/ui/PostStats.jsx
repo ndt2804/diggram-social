@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import PostService from '../../services/post.sercive';
+import PostService from '../../services/post.service';
 const PostStats = ({ postId }) => {
     const queryClient = useQueryClient();
 

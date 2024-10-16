@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import AuthService from '../services/auth.service';
 
 // Tạo AuthContext
@@ -15,11 +15,13 @@ const getCookie = (name) => {
 const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;SameSite=None;Secure`;
 };
+
 // Cung cấp AuthContext cho các component con
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(getCookie('accessToken'));
     const [friends, setFriends] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // Hàm đăng nhập
     const login = async (email, password) => {
@@ -39,9 +41,10 @@ const AuthProvider = ({ children }) => {
             await AuthService.logout();
             setUser(null);
             setToken(null);
+            setFriends([]);
             deleteCookie('accessToken');
-            deleteCookie('refreshToken'); deleteCookie('user');
-
+            deleteCookie('refreshToken');
+            deleteCookie('user');
         } catch (error) {
             console.error('Logout failed:', error.message);
         }
@@ -55,22 +58,26 @@ const AuthProvider = ({ children }) => {
                     AuthService.getCurrentUser(),
                     AuthService.getFriendUser()
                 ]);
-                setFriends(friendData);
                 setUser(userData);
-                setToken(getCookie('accessToken'));
+                setFriends(friendData);
             } catch (error) {
-                // Xóa token nếu không thể lấy thông tin người dùng
-                deleteCookie('accessToken');
-                deleteCookie('refreshToken');
-                deleteCookie('user');
+                console.error('Failed to fetch user data:', error);
+                logout();
+            } finally {
+                setLoading(false);
             }
         };
 
         if (token) {
             fetchUser();
+        } else {
+            setLoading(false);
         }
-    }, [token]);
+    }, []);
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <AuthContext.Provider value={{ user, token, login, logout, friends }}>

@@ -66,7 +66,7 @@ const LeftSidebar = () => {
                     />
                 </Link>
 
-                <Link to={`/profile/`} className='flex gap-3 items-center'>
+                <Link to={`/profile/${user?.username}`} className='flex gap-3 items-center'>
                     <img
                         src={user?.image_url || '/default-avatar.png'}
                         alt='profile'

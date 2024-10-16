@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PostStats from './PostStats.jsx';
 import { useQuery } from '@tanstack/react-query';
-import PostService from '../../services/post.sercive.js';
+import PostService from '../../services/post.service.js';
 const PostCard = () => {
     const {
         data: posts,
