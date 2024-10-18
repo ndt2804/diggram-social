@@ -11,6 +11,7 @@ import Notifications from './Pages/notifications.jsx'
 import Explore from './Pages/explore.jsx'
 import RootLayout from './Pages/layouts/RootLayout.jsx'
 import AuthLayout from './Pages/layouts/AuthLayout.jsx'
+import PostDetailPage from './Pages/detail-post.jsx'
 import './index.css'
 import Saved from './Pages/saved.jsx'
 import CreatePost from './Pages/create-post.jsx'
@@ -33,6 +34,8 @@ function App() {
             <Route path="/explore" element={<Explore />} />
             <Route path="/saved" element={<Saved />} />
             <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/posts/:postId" element={<PostDetailPage />} />
+
           </Route>
           {/* private routes */}
           {/* <Route element={<RootLayout />}>

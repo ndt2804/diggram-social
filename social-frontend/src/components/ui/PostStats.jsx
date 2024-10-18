@@ -1,16 +1,14 @@
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PostService from '../../services/post.service';
+import { useGetSinglePost } from '../../libs/react-query/react-query';
 const PostStats = ({ postId }) => {
     const queryClient = useQueryClient();
+    const { data: post, isLoading, error } = useGetSinglePost(postId);
+    const commentCount = post?.comments ? post.comments.length : 0;
 
-    // Fetch bài đăng bằng getPost từ PostServices
-    const { data: post, isLoading, error } = useQuery({
-        queryKey: ['post', postId],
-        queryFn: () => PostService.getPost(postId),
-    });
-
-    // Mutation để cập nhật bài đăng bằng updatePost từ PostServices
     const mutation = useMutation({
         mutationFn: PostService.updatePost,
         onSuccess: () => {
@@ -46,7 +44,7 @@ const PostStats = ({ postId }) => {
                     //     ? './assets/icons/heart.svg'
                     //     : './assets/icons/hearted.svg'}
 
-                    src='./assets/icons/hearted.svg'
+                    src='./assets/icons/heart.svg'
                     alt="like"
                     width={20}
                     height={20}
@@ -54,14 +52,17 @@ const PostStats = ({ postId }) => {
                     className="cursor-pointer"
                 />
                 <p className="text-sm lg:text-base">{post.likes}</p>
-                <img
-                    src='./assets/icons/comment.svg'
-                    alt="Comment"
-                    width={20}
-                    height={20}
-                    className="cursor-pointer"
-                />
-                <span className="text-sm lg:text-base">{post.comments}</span>
+                <Link to={`/posts/${post.id}`}>
+                    <img
+                        src='./assets/icons/comment.svg'
+                        alt="Comment"
+                        width={20}
+                        height={20}
+                        className="cursor-pointer"
+                    />
+                </Link>
+
+                <span className="text-sm lg:text-base">{commentCount}</span>
             </div>
             <div className="flex items-center gap-2">
                 <img

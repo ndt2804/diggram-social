@@ -43,7 +43,6 @@ const LeftSidebar = () => {
     const navigate = useNavigate()
     const { pathname } = useLocation()
     const { user } = useContext(AuthContext);
-    console.log(user);
     const handleSignOut = async () => {
         if (!user) {
             // Nếu không có user, chuyển hướng đến trang đăng nhập

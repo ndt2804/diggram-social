@@ -53,10 +53,21 @@ const updatePost = async (postId, postData) => {
     }
 };
 
+const createComment = async (postId, userId, content) => {
+    try {
+        const response = await axios.post(`${API_URL}comments`, { postId, userId, content });
+        return response.data;
+    } catch (error) {
+        console.error('Create Comment failed:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
 const PostService = {
     getPost,
     updatePost,
     createPost,
+    createComment
 };
 
 export default PostService;

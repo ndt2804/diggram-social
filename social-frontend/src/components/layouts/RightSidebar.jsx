@@ -4,11 +4,9 @@ import FriendInfoBox from '../ui/FriendBox'
 
 const RightSidebar = () => {
     const { friends } = useContext(AuthContext);
-    console.log(friends);
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
     const sidebarRef = useRef(null);
-
     const handleFriendClick = (friend, event) => {
         const sidebarRect = sidebarRef.current.getBoundingClientRect();
         const clickPosition = event.clientY - sidebarRect.top;
