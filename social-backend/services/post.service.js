@@ -1,6 +1,4 @@
 import supabase from "../libs/supabase.js";
-import { v4 as uuidv4 } from 'uuid';
-
 
 const uploadImage = async (buffer, originalname, mimetype) => {
     const filePath = `public/${originalname}`;
@@ -40,25 +38,75 @@ export const createPost = async (userId, caption, imageFile) => {
     if (error) {
         throw error;
     }
-    return data;
+    return data
 };
-
 
 export const getPost = async () => {
-    const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-    if (error) {
-        console.error('Error creating post:', error);
-        throw new Error('Failed to create post');
-    }
+    const { data: posts, error: postsError } = await supabase
+        .from('posts')
+        .select(`
+            id,
+            userId,
+            caption,
+            imageUrl,
+            created_at,
+            users (
+                fullname,
+                image_url
+            ),
+            comments (
+                id,   
+                userId,
+                content,
+                created_at,
+                users (
+                    fullname,
+                    image_url
+                ) 
+            )
+            `).order('created_at', { ascending: false });
 
-    return data;
-};
+
+    if (postsError) {
+        console.error('Error fetching posts:', postsError);
+    }
+    return posts;
+}
+export const getSinglePost = async (postId) => {
+    const { data: posts, error: postsError } = await supabase
+        .from('posts')
+
+        .select(`
+            id,
+            userId,
+            caption,
+            imageUrl,
+            created_at,
+            users (
+                fullname,
+                image_url
+            ),
+            comments (
+                id,   
+                userId,
+                content,
+                created_at,
+                users (
+                    fullname,
+                    image_url
+                ) 
+            )
+            `).eq('id', postId)
+        .single();
+    if (postsError) {
+        console.error('Error fetching posts:', postsError);
+    }
+    return posts;
+}
 
 export const updatePostService = async (postId, postData) => {
     const { data, error } = await supabase
-        .from('posts') // Tên bảng trong Supabase
+        .from('posts')
         .update(postData)
         .eq('id', postId)
         .single();
@@ -69,3 +117,18 @@ export const updatePostService = async (postId, postData) => {
 
     return data;
 };
+
+export const createComment = async (postId, userId, content) => {
+    const { data, error } = await supabase
+        .from('comments')
+        .insert([
+            { postId: postId, userId: userId, content }
+        ])
+        .select("*");
+
+    if (error) {
+        throw error;
+    }
+    return data;
+};
+
