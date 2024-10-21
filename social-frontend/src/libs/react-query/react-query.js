@@ -3,13 +3,19 @@ import {
     useMutation,
     useQueryClient,
 } from "@tanstack/react-query";
-
 import {
+    createUserAccount,
+    signInAccount,
+    signOutAccount,
+    getUserByUsername,
+    getFriendUser,
+    getCurrentUser,
     getPost,
     createPost,
     updatePost,
     createComment,
     getSinglePost,
+    getPostOfUser,
 } from "../api/api"
 
 // ============================================================
@@ -22,16 +28,74 @@ export const useCreateUserAccount = () => {
     });
 };
 
+
 export const useSignInAccount = () => {
     return useMutation({
-        mutationFn: (user) =>
-            signInAccount(user),
+        mutationFn: ({ email, password }) => signInAccount(email, password),
+        onMutate: (variables) => {
+            console.log('Starting sign in mutation with:', variables);
+        },
+        onError: (error) => {
+            console.error('Sign in error:', error);
+        },
+        onSuccess: (data) => {
+            console.log('Sign in successful:', data);
+        },
     });
 };
 
 export const useSignOutAccount = () => {
     return useMutation({
         mutationFn: signOutAccount,
+    });
+};
+
+// ============================================================
+// USER QUERIES
+// ============================================================
+
+export const useGetCurrentUser = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+        queryFn: getCurrentUser(),
+    });
+};
+
+export const useGetUsers = (limit) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_USERS],
+        queryFn: () => getUsers(limit),
+    });
+};
+
+export const useGetUserByUsername = (username) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_USER_BY_USERNAME, username],
+        queryFn: () => getUserByUsername(username),
+        enabled: !!username,
+    });
+};
+
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (user) => updateUser(user),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+
+            });
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+            });
+        },
+    });
+};
+
+export const useGetFriendUser = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_FRIEND_USER],
+        queryFn: getFriendUser,
     });
 };
 
@@ -46,7 +110,13 @@ export const useGetAllPosts = () => {
         queryFn: getPost,
     });
 };
-
+export const useGetPostOfUser = (userId) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_POST_OF_USER],
+        queryFn: () => getPostOfUser(userId),
+        enabled: !!userId,
+    });
+};
 export const useGetSinglePost = (postId) => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
@@ -216,7 +286,10 @@ export const useCreateComment = () => {
 
 export const QUERY_KEYS = {
     GET_ALL_POSTS: 'getAllPosts',
+    GET_POST_OF_USER: 'getPostOfUser',
     GET_POST_BY_ID: 'getPostById',
+    GET_USER_BY_USERNAME: 'getUserByUsername',
+    GET_FRIEND_USER: 'getFriendUser',
     GET_RECENT_POSTS: 'getRecentPosts',
     GET_POSTS: 'getPosts',
     GET_INFINITE_POSTS: 'getInfinitePosts',

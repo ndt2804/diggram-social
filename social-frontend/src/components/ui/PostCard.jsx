@@ -1,23 +1,22 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PostStats from './PostStats.jsx';
 import { useCreateComment } from '../../libs/react-query/react-query';
+import { useUserContext } from '../../context/auth.context.jsx';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { AuthContext } from '../../context/auth.context'
 dayjs.extend(relativeTime);
 const PostCard = ({ post, isDetailView = false }) => {
     const [content, setContent] = useState('');
     const [recentComment, setRecentComment] = useState(null);
     const [showAllComments, setShowAllComments] = useState(false);
-    const { user } = useContext(AuthContext);
+    const { user } = useUserContext();
     const createCommentMutation = useCreateComment();
-
     const commentCount = post.comments ? post.comments.length : 0
     const handleCommentSubmit = async (postId) => {
         if (content.trim()) {
             const newComment = {
-                id: Date.now(), // Temporary ID
+                id: Date.now(),
                 content,
                 userId: user.id,
                 created_at: new Date().toISOString(),

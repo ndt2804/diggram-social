@@ -1,38 +1,37 @@
 import React, { useState, useContext } from 'react';
 import PostService from '../services/post.service';
-import { AuthContext } from '../context/auth.context';
 
 const CreatePost = () => {
-    const { user } = useContext(AuthContext);
-    const [content, setContent] = useState('');
-    const [images, setImages] = useState([]);
+    // const { user } = useContext(AuthContext);
+    // const [content, setContent] = useState('');
+    // const [images, setImages] = useState([]);
 
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        const newImages = files.map(file => ({
-            file,
-            preview: URL.createObjectURL(file)
-        }));
-        setImages(prevImages => [...prevImages, ...newImages]);
-    };
+    // const handleImageChange = (e) => {
+    //     const files = Array.from(e.target.files);
+    //     const newImages = files.map(file => ({
+    //         file,
+    //         preview: URL.createObjectURL(file)
+    //     }));
+    //     setImages(prevImages => [...prevImages, ...newImages]);
+    // };
 
-    const removeImage = (index) => {
-        setImages(prevImages => prevImages.filter((_, i) => i !== index));
-    };
+    // const removeImage = (index) => {
+    //     setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    // };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const imageFile = images.length > 0 ? images[0].file : null;
-        try {
-            const res = await PostService.createPost(user.id, content, imageFile);
-            setContent('');
-            setImages([]);
-            alert('Post created successfully!');
-        } catch (error) {
-            console.error('Error creating post:', error);
-            alert('Failed to create post');
-        }
-    };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     const imageFile = images.length > 0 ? images[0].file : null;
+    //     try {
+    //         const res = await PostService.createPost(user.id, content, imageFile);
+    //         setContent('');
+    //         setImages([]);
+    //         alert('Post created successfully!');
+    //     } catch (error) {
+    //         console.error('Error creating post:', error);
+    //         alert('Failed to create post');
+    //     }
+    // };
 
     const renderPreviewImages = () => {
         const imageCount = images.length;
@@ -56,7 +55,7 @@ const CreatePost = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-6">Create a New Post</h1>
+            {/* <h1 className="text-3xl font-bold mb-6">Create a New Post</h1>
             <div className="flex flex-col md:flex-row gap-8">
                 <form onSubmit={handleSubmit} className="flex-1">
                     <div className="mb-4">
@@ -115,7 +114,7 @@ const CreatePost = () => {
                         {renderPreviewImages()}
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

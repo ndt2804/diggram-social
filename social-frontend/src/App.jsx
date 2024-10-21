@@ -1,5 +1,3 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import { Routes, Route } from 'react-router-dom'
 import Home from './Pages/home.jsx'
 import Me from './Pages/profile.jsx'
@@ -12,9 +10,10 @@ import Explore from './Pages/explore.jsx'
 import RootLayout from './Pages/layouts/RootLayout.jsx'
 import AuthLayout from './Pages/layouts/AuthLayout.jsx'
 import PostDetailPage from './Pages/detail-post.jsx'
-import './index.css'
 import Saved from './Pages/saved.jsx'
 import CreatePost from './Pages/create-post.jsx'
+import './index.css'
+
 function App() {
   return (
     <>

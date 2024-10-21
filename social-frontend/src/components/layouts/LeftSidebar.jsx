@@ -1,56 +1,19 @@
-import { useEffect, useContext } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { AuthContext } from '../../context/auth.context'
-const sidebarLinks = [
-    {
-        imgURL: './assets/images/home.svg',
-        route: '/',
-        label: 'Home',
-    },
-    {
-        imgURL: './assets/images/search.svg',
-        route: '/search',
-        label: 'Search',
-    },
-    {
-        imgURL: './assets/images/explore.svg',
-        route: '/explore',
-        label: 'Explore',
-    },
-    {
-        imgURL: './assets/images/message.svg',
-        route: '/message',
-        label: 'Message',
-    },
-    {
-        imgURL: './assets/images/saved.svg',
-        route: '/saved',
-        label: 'Saved',
-    },
-    {
-        imgURL: './assets/images/notification.svg',
-        route: '/notifications',
-        label: 'Notification',
-    },
-    {
-        imgURL: './assets/images/create.svg',
-        route: '/create-post',
-        label: 'Create Post',
-    },
-]
-
+import { useUserContext } from '../../context/auth.context'
+import { sidebarLinks } from '../../constants'
+import { useSignOutAccount } from '../../libs/react-query/react-query'
 const LeftSidebar = () => {
     const navigate = useNavigate()
     const { pathname } = useLocation()
-    const { user } = useContext(AuthContext);
+    const { user } = useUserContext();
+    const { mutateAsync: signOut } = useSignOutAccount();
+
     const handleSignOut = async () => {
         if (!user) {
-            // Nếu không có user, chuyển hướng đến trang đăng nhập
-            navigate('/sign-in'); // Thay đổi đường dẫn đến trang đăng nhập của bạn
+            navigate('/sign-in');
         } else {
-            // Nếu có user, thực hiện đăng xuất
-            await logout();
-            navigate('/sign-in'); // Chuyển hướng đến trang đăng nhập sau khi đăng xuất
+            await signOut();
+            navigate('/sign-in');
         }
     };
     return (
@@ -76,7 +39,6 @@ const LeftSidebar = () => {
                         <p className='small-regular text-light-3'> @{user ? user.username : 'Guest'}!</p>
                     </div>
                 </Link>
-
                 <ul className='flex flex-col gap-6'>
                     {sidebarLinks.map((link) => {
                         const isActive = pathname === link.route
