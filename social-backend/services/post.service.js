@@ -72,6 +72,38 @@ export const getPost = async () => {
     }
     return posts;
 }
+export const getPostOfUser = async (userId) => {
+    const { data: posts, error: postsError } = await supabase
+        .from('posts')
+        .select(`
+            id,
+            userId,
+            caption,
+            imageUrl,
+            created_at,
+            users (
+                fullname,
+                image_url
+            ),
+            comments (
+                id,   
+                userId,
+                content,
+                created_at,
+                users (
+                    fullname,
+                    image_url
+                ) 
+            )
+            `).eq('userId', userId).order('created_at', { ascending: false });
+
+
+    if (postsError) {
+        console.error('Error fetching posts:', postsError);
+    }
+    return posts;
+}
+
 export const getSinglePost = async (postId) => {
     const { data: posts, error: postsError } = await supabase
         .from('posts')

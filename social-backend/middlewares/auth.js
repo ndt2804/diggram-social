@@ -9,21 +9,25 @@ export const auth = async (req, res, next) => {
       const accessTokenMatch = cookie.match(/accessToken=([^;]*)/);
       const refreshTokenMatch = cookie.match(/refreshToken=([^;]*)/);
       const accessToken = accessTokenMatch ? accessTokenMatch[1] : null;
-      const refreshToken = refreshTokenMatch ? refreshTokenMatch[1] : null
+      const refreshToken = refreshTokenMatch ? refreshTokenMatch[1] : null;
+
       jwt.verify(accessToken, secretKey, (err, user) => {
         if (err) {
+          if (err.name === "TokenExpiredError") {
+            return res
+              .status(401)
+              .json({ message: "Token is expired", isExpired: true });
+          }
           return res
             .status(401)
-            .json({ message: "Failed to authenticate token." });
+            .json({ message: "Invalid token", isExpired: false });
         }
         req.user = user;
         next();
       });
-    }
-    if (!cookie) {
+    } else {
       return res.status(403).json({ message: "You do not have authorization" });
     }
-
   } catch (err) {
     console.log(err);
     res.status(401).send("Please authenticate");

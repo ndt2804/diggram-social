@@ -1,8 +1,8 @@
 import {
   registerUserService,
   loginUserService,
+  userSignOutService,
   refreshTokenService,
-  userService,
   getUserService,
   updateUserService,
   changePasswordUserService,
@@ -28,17 +28,32 @@ export async function logInUser(req, res) {
     const user = await loginUserService(email, password);
     res.cookie('accessToken', user.accessToken, { httpOnly: true, secure: true });
     res.cookie('refreshToken', user.refreshToken, { httpOnly: true, secure: true });
-    res.status(201).json(user);
-
+    res.status(201).json(user)
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Login failed" });
   }
 }
-
-export async function getProfile(req, res) {
+export async function signOutUser(req, res) {
+  const { userId } = req.body;
   try {
-    const user = await userService(req.headers.cookie);
+    const result = await userSignOutService(userId);
+    if (result) {
+      res.clearCookie('accessToken', { httpOnly: true, secure: true, path: '/' });
+      res.clearCookie('refreshToken', { httpOnly: true, secure: true, path: '/' });
+      res.status(200).json({ message: 'Signed out successfully' });
+    } else {
+      res.status(400).json({ message: 'User not found or sign out failed' });
+    }
+  } catch (error) {
+    console.error('Sign out error:', error);
+    res.status(500).json({ message: 'An error occurred during sign out' });
+  }
+}
+
+export async function getUser(req, res) {
+  try {
+    const user = await getUserService(req.params.slug);
     res.status(200).send(user);
   } catch (error) {
     return res.status(500).send((error));
@@ -67,14 +82,9 @@ export async function updateUser(req, res) {
     return res.status(500).send((error));
   }
 }
-export async function getUser(req, res) {
-  try {
-    const user = await getUserService(req.params.slug);
-    res.status(200).send(user);
-  } catch (error) {
-    return res.status(500).send((error));
-  }
-}
+
+
+
 export async function changePassword(req, res) {
   const { oldPassword, newPassword } = req.body;
 

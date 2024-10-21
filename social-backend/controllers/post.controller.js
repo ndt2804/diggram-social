@@ -1,4 +1,4 @@
-import { createPost, getPost, updatePostService, createComment, getSinglePost } from '../services/post.service.js';
+import { createPost, getPost, updatePostService, createComment, getSinglePost, getPostOfUser } from '../services/post.service.js';
 
 export const updatePostController = async (req, res) => {
     const { id } = req.params;
@@ -34,6 +34,17 @@ export async function handleGetPost(req, res) {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Get  friend failed" });
+    }
+}
+
+export const handleGetPostOfUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const posts = await getPostOfUser(userId);
+        res.status(201).json(posts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Get post of user failed" });
     }
 }
 

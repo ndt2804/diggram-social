@@ -19,12 +19,16 @@ export async function requestFriend(req, res) {
     }
 }
 export async function getFriend(req, res) {
+    const userId = req.query.userId;
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
     try {
-        const friend = await getFriendService(req.headers.cookie);
-        res.status(201).json(friend);
+        const friends = await getFriendService(userId);
+        return res.status(200).json(friends);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Get  friend failed" });
+        console.error('Error fetching friends:', error);
+        return res.status(500).json({ error: 'Failed to fetch friends' });
     }
 }
 export async function unFriend(req, res) {

@@ -58,11 +58,13 @@ export async function loginUserService(email, password) {
     const accessToken = jwt.sign(
       { id: existingUser.id },
       process.env.SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "1d" }
     );
     const refreshToken = jwt.sign(
       { id: existingUser.id },
-      process.env.SECRET_KEY
+      process.env.SECRET_KEY,
+      { expiresIn: "30d" }
+
     );
     return {
       message: "User logged in successfully",
@@ -75,6 +77,8 @@ export async function loginUserService(email, password) {
     return { message: "Error logging in", error };
   }
 }
+
+
 export async function refreshTokenService(cookie) {
   try {
     const refreshTokenMatch = cookie.match(/refreshToken=([^;]*)/);
@@ -98,7 +102,7 @@ export async function refreshTokenService(cookie) {
     const newToken = jwt.sign(
       { id: existingUser.id },
       process.env.SECRET_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: "1d" }
 
     );
     return {
@@ -110,20 +114,14 @@ export async function refreshTokenService(cookie) {
     return { message: "Error refresh token in", error };
   }
 }
-export async function userService(user) {
+
+export async function userSignOutService(userId) {
   try {
-    const tokenMatch = user.match(/accessToken=([^;]*)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
-    if (!token) {
-      throw new Error();
-    }
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
     const { data: existingUser, error } = await supabase
       .from("users")
       .select("*")
-      .eq("id", decoded.id)
+      .eq("id", userId)
       .single();
-
     if (error) {
       console.error("Error user in:", error.message);
       throw new Error("Failed user");
@@ -131,14 +129,13 @@ export async function userService(user) {
     if (!existingUser) {
       throw new Error('Not User');
     }
-
     return existingUser;
-
   }
   catch (e) {
     throw new Error('Error when try get User');
   }
 }
+
 export async function getUserService(slug) {
 
   try {

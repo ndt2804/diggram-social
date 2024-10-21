@@ -53,51 +53,31 @@ export async function requestFriendService(cookie) {
     }
 }
 
-export async function getFriendService(cookie) {
+export async function getFriendService(userId) {
     try {
-        const tokenMatch = cookie.match(/accessToken=([^;]*)/);
-        const token = tokenMatch ? tokenMatch[1] : null;
-        if (!token) {
-            throw new Error();
-        }
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const { data: friends, error } = await supabase
             .from('friends')
             .select(`
             id,
             created_at,
             status,
-            blocked,
-            user2:users!user_id_2(username, fullname, email, image_url)
+            user1:users!user_id_1(id,username, fullname, email, image_url),
+            user2:users!user_id_2(id,username, fullname, email, image_url)
         `)
-            .or(`user_id_1.eq.${decoded.id},user_id_2.eq.${decoded.id}`)
+            .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`)
             .eq('status', 1);
+
         if (error) {
-            console.error("Error user in:", error.message);
-            throw new Error("Failed user");
+            console.error("Error fetching friends:", error.message);
+            return res.status(500).json({ error: "Failed to fetch friends." });
         }
-        if (!friends) {
-            throw new Error('Not User');
-        }
-        const friendList = friends.map(friend => ({
-            id: friend.id,
-            created_at: friend.created_at,
-            user2: friend.user2 ? {
-                username: friend.user2.username,
-                fullname: friend.user2.fullname,
-                email: friend.user2.email,
-                image_url: friend.user2.image_url
-            } : null,
-            status: friend.status,
-            blocked: friend.blocked
-        }));
+        const users = friends.flatMap(item => [item.user1, item.user2])
+            .filter(user => user.id !== Number(userId));
 
-
-
-        return friendList;
-    }
-    catch (e) {
-        throw new Error('Error when try get User');
+        return users;
+    } catch (e) {
+        console.error('Error in getFriendService:', e);
+        throw new Error('Error fetching friends');
     }
 }
 
