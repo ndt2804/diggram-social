@@ -127,6 +127,12 @@ export const getSinglePost = async (postId) => {
                     fullname,
                     image_url
                 ) 
+            ),
+            likes (
+                userId
+            ),
+            saved (
+                userId
             )
             `).eq('id', postId)
         .single();
@@ -162,5 +168,107 @@ export const createComment = async (postId, userId, content) => {
         throw error;
     }
     return data;
+};
+export const likePost = async (postId, userId) => {
+    try {
+        const { data: existingLike } = await supabase
+            .from('likes')
+            .select('id')
+            .eq('postId', postId)
+            .eq('userId', userId)
+            .single();
+        if (existingLike) {
+            const { error: deleteError } = await supabase
+                .from('likes')
+                .delete()
+                .eq('id', existingLike.id);
+
+            if (deleteError) {
+                throw deleteError;
+            }
+            return { action: 'unliked', message: 'Post unliked successfully' };
+        } else {
+            const { data, error } = await supabase
+                .from('likes')
+                .insert([{ postId, userId }])
+                .select();
+
+            if (error) {
+                throw error;
+            }
+            return { action: 'liked', message: 'Post liked successfully', data };
+        }
+    } catch (error) {
+        console.error('Error in likePost:', error);
+        throw error;
+    }
+};
+
+export const getSavedPost = async (userId) => {
+    if (!userId) {
+        throw new Error('User ID is required');
+    }
+
+    const { data, error } = await supabase
+        .from('saved')
+        .select(`
+            id,
+            created_at,
+            posts (
+                id,
+                userId,
+                caption,
+                imageUrl,
+                created_at,
+                users (
+                    id,
+                    fullname,
+                    image_url
+                )
+            )
+        `)
+        .eq('userId', userId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching saved posts:', error);
+        throw error;
+    }
+
+    return data;
+}
+export const savePost = async (postId, userId) => {
+    try {
+        const { data: existingSaved } = await supabase
+            .from('saved')
+            .select('id')
+            .eq('postId', postId)
+            .eq('userId', userId)
+            .single();
+        if (existingSaved) {
+            const { error: deleteError } = await supabase
+                .from('saved')
+                .delete()
+                .eq('id', existingSaved.id);
+
+            if (deleteError) {
+                throw deleteError;
+            }
+            return { action: 'unsaved', message: 'Post unsaved successfully' };
+        } else {
+            const { data, error } = await supabase
+                .from('saved')
+                .insert([{ postId, userId }])
+                .select();
+
+            if (error) {
+                throw error;
+            }
+            return { action: 'saved', message: 'Post saved successfully', data };
+        }
+    } catch (error) {
+        console.error('Error in savePost:', error);
+        throw error;
+    }
 };
 

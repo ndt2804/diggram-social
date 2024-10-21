@@ -1,4 +1,14 @@
-import { createPost, getPost, updatePostService, createComment, getSinglePost, getPostOfUser } from '../services/post.service.js';
+import {
+    createPost,
+    getPost,
+    updatePostService,
+    createComment,
+    getSinglePost,
+    getPostOfUser,
+    likePost,
+    savePost,
+    getSavedPost,
+} from '../services/post.service.js';
 
 export const updatePostController = async (req, res) => {
     const { id } = req.params;
@@ -70,4 +80,19 @@ export const handleCreateComment = async (req, res) => {
     } 12
 }
 
+export const handleLikePost = async (req, res) => {
+    const { postId, userId } = req.body;
+    const post = await likePost(postId, userId);
+    res.status(201).json(post);
+}
+export const handleGetSavedPost = async (req, res) => {
+    const { userId } = req.params;
+    const posts = await getSavedPost(userId);
+    res.status(201).json(posts);
+}
 
+export const handleSavePost = async (req, res) => {
+    const { postId, userId } = req.body;
+    const post = await savePost(postId, userId);
+    res.status(201).json(post);
+}
