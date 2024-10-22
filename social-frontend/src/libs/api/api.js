@@ -178,6 +178,33 @@ export const createComment = async (postId, userId, content) => {
     }
 };
 
+export const likePost = async (postId, userId) => {
+    try {
+        const response = await axiosPrivate.post(`${API_URL}posts/${postId}/likePost`, { postId, userId });
+        return response.data;
+    } catch (error) {
+        console.error('Like Post failed:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+export const getSavedPost = async (userId) => {
+    try {
+        const response = await axiosPrivate.get(`${API_URL}posts/saved/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Get Saved Post failed:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+export const savePost = async (postId, userId) => {
+    try {
+        const response = await axiosPrivate.post(`${API_URL}posts/${postId}/savePost`, { postId, userId });
+        return response.data;
+    } catch (error) {
+        console.error('Saved Post failed:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
 // ============================================================
 // FRIEND API
 // ============================================================
@@ -194,6 +221,25 @@ export const getFriendUser = async () => {
     }
 };
 
+// ============================================================
+// CHAT API
+// ============================================================ 
+export const createChat = async (userId, friendId) => {
+    const response = await axiosPrivate.post(`${API_URL}createChat`, {
+        userId,
+        friendId,
+    });
+
+    if (!response.ok) {
+        throw new Error('Error creating chat');
+    }
+
+    return response.json();
+};
+export const getChat = async (userId) => {
+    const response = await axiosPrivate.get(`${API_URL}getChat/?userId=${userId}`);
+    return response.data;
+};
 
 // ============================================================
 // COOKIE API

@@ -1,17 +1,20 @@
 import React from 'react';
 
 const RightChat = ({ selectedContact, onMute, onGoToProfile, onDeleteConversation }) => {
-    if (!selectedContact) return null;
-
+    console.log('RightChat rendering, selectedContact:', selectedContact);
+    if (!selectedContact) {
+        console.log('RightChat not rendering: selectedContact is null or undefined');
+        return null;
+    }
     return (
-        <div className="w-1/4 border-l p-4 flex flex-col">
+        <div className="w-1/3 border-l p-4 bg-red-200 border-4 border-red-500 overflow-y-auto">
             <div className="flex items-center mb-4">
                 <img
                     src={selectedContact.avatar || 'default-avatar.png'}
-                    alt={selectedContact.name}
+                    alt={selectedContact.fullname}
                     className="w-16 h-16 rounded-full mr-4"
                 />
-                <h2 className="text-xl font-bold">{selectedContact.name}</h2>
+                <h2 className="text-xl font-bold">{selectedContact.fullname}</h2>
             </div>
 
             <div className="mb-4">

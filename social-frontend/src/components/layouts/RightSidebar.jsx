@@ -4,6 +4,7 @@ import { useGetFriendUser } from '../../libs/react-query/react-query'
 
 const RightSidebar = () => {
     const { data: friends, isLoading, error } = useGetFriendUser();
+    console.log(friends);
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
     const sidebarRef = useRef(null);

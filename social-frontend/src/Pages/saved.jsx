@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useGetSavedPost } from '../libs/react-query/react-query';
+import { useUserContext } from '../context/auth.context';
 
 const SavedItem = ({ item, onRemove }) => {
+    const post = item.posts;
     return (
         <div className="bg-white rounded-lg shadow-md p-4 flex items-center">
-            {item.type === 'image' && (
-                <img src={item.content} alt={item.title} className="w-20 h-20 object-cover rounded mr-4" />
+            {post.imageUrl && (
+                <img src={post.imageUrl} alt={post.caption} className="w-20 h-20 object-cover rounded mr-4" />
             )}
             <div className="flex-grow">
-                <h3 className="font-semibold text-lg">{item.title}</h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
-                <p className="text-gray-400 text-xs mt-1">Saved on: {item.savedDate}</p>
+                <h3 className="font-semibold text-lg">{post.caption}</h3>
+                <p className="text-gray-600 text-sm">Posted by: {post.users.fullname}</p>
+                <p className="text-gray-400 text-xs mt-1">Saved on: {new Date(item.created_at).toLocaleDateString()}</p>
             </div>
             <div className="flex flex-col items-end ml-4">
                 <button
@@ -19,9 +22,7 @@ const SavedItem = ({ item, onRemove }) => {
                     Remove
                 </button>
                 <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`/post/${post.id}`}
                     className="text-blue-500 hover:text-blue-700 mt-2"
                 >
                     View
@@ -32,32 +33,20 @@ const SavedItem = ({ item, onRemove }) => {
 };
 
 const Saved = () => {
-    const [savedItems, setSavedItems] = useState([]);
+    const { user } = useUserContext();
     const [filter, setFilter] = useState('all');
 
-    useEffect(() => {
-        // Fetch saved items when component mounts
-        fetchSavedItems();
-    }, []);
+    const { data: savedPosts, isLoading, error } = useGetSavedPost(user?.id);
 
-    const fetchSavedItems = async () => {
-        // In a real application, this would be an API call to fetch the user's saved items
-        const mockSavedItems = [
-            { id: 1, type: 'post', title: 'Interesting Article', description: 'A fascinating read about...', savedDate: '2023-05-15', link: '#' },
-            { id: 2, type: 'image', title: 'Beautiful Landscape', description: 'Scenic mountain view', content: 'https://source.unsplash.com/random/800x600?landscape', savedDate: '2023-05-14', link: '#' },
-            { id: 3, type: 'link', title: 'Useful Resource', description: 'A great tool for developers', savedDate: '2023-05-13', link: 'https://example.com' },
-            { id: 4, type: 'post', title: 'Tech News', description: 'Latest updates in the tech world', savedDate: '2023-05-12', link: '#' },
-            { id: 5, type: 'image', title: 'Cute Cat', description: 'Adorable kitten picture', content: 'https://source.unsplash.com/random/800x600?cat', savedDate: '2023-05-11', link: '#' },
-        ];
-        setSavedItems(mockSavedItems);
-    };
+    if (!user) return <div>Please log in to view saved posts.</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
     const removeSavedItem = (id) => {
-        // In a real application, you would also make an API call to remove the item from the user's saved items
-        setSavedItems(savedItems.filter(item => item.id !== id));
+        console.log(`Remove item with id: ${id}`);
     };
 
-    const filteredItems = filter === 'all' ? savedItems : savedItems.filter(item => item.type === filter);
+    const filteredItems = filter === 'all' ? savedPosts : savedPosts.filter(item => item.posts.type === filter);
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -81,19 +70,13 @@ const Saved = () => {
                 >
                     Images
                 </button>
-                <button
-                    onClick={() => setFilter('link')}
-                    className={`px-4 py-2 rounded ${filter === 'link' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                >
-                    Links
-                </button>
             </div>
             <div className="space-y-4">
-                {filteredItems.map(item => (
+                {filteredItems && filteredItems.map(item => (
                     <SavedItem key={item.id} item={item} onRemove={removeSavedItem} />
                 ))}
             </div>
-            {filteredItems.length === 0 && (
+            {(!filteredItems || filteredItems.length === 0) && (
                 <p className="text-center text-gray-500 mt-8">No saved items found.</p>
             )}
         </div>

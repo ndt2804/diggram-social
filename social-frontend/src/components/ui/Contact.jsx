@@ -1,18 +1,52 @@
 import React, { useState } from 'react';
+import { useCreateChat, useGetChats, useGetFriendUser } from '../../libs/react-query/react-query';
+import { useUserContext } from '../../context/auth.context'
+import ModalChat from './modal-chat';
 
-const ContactList = ({ contacts, onSelect }) => {
+const ContactList = ({ contacts, onSelect, onStartNewChat }) => {
+    const { user } = useUserContext();
+    const { data: friends, isLoading, error } = useGetFriendUser();
+
+    const { data: chats, isLoading: isChatsLoading } = useGetChats(user?.id);
+    console.log('chats', chats);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('all'); // 'all' or 'group'
+    const [activeTab, setActiveTab] = useState('all');
+    const { mutate: createChat } = useCreateChat();
+    const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
-    const filteredContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (activeTab === 'all' || (activeTab === 'group' && contact.isGroup))
-    );
+    const handleNewChat = () => {
+        setIsNewChatModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsNewChatModalOpen(false);
+    };
+
+    const handleStartChat = (selectedUser, initialMessage) => {
+        // Gọi hàm từ prop để thông báo cho component cha
+        onStartNewChat(selectedUser, initialMessage);
+        setIsNewChatModalOpen(false);
+    };
+
+    const filteredChats = chats?.filter(chat =>
+        chat.fullname.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (activeTab === 'all' || (activeTab === 'group' && chat.isGroup))
+    ) || [];
+
 
     return (
         <div className="w-1/4 border-r p-4 flex flex-col h-full">
-            <h2 className="font-bold mb-4">Direct Messages</h2>
 
+            <div className="flex justify-between items-center mb-4 p-4">
+                <h2 className="font-bold">Direct Messages</h2>
+                <button
+                    onClick={handleNewChat}
+
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    New Chat
+                </button>
+            </div>
             {/* Search input */}
             <input
                 type="text"
@@ -40,17 +74,27 @@ const ContactList = ({ contacts, onSelect }) => {
 
             {/* Contact list */}
             <ul className="overflow-y-auto flex-grow">
-                {filteredContacts.map((contact) => (
-                    <li
-                        key={contact.id}
-                        onClick={() => onSelect(contact)}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                    >
-                        {contact.name}
-                        {contact.isGroup && <span className="ml-2 text-xs text-gray-500">(Group)</span>}
-                    </li>
-                ))}
+                {isChatsLoading ? (
+                    <li className="p-2">Loading chats...</li>
+                ) : (
+                    filteredChats.map((chat) => (
+                        <li
+                            key={chat.id}
+                            onClick={() => onSelect(chat)}
+                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                            {chat.fullname}
+                            {chat.isGroup && <span className="ml-2 text-xs text-gray-500">(Group)</span>}
+                        </li>
+                    ))
+                )}
             </ul>
+            <ModalChat
+                isOpen={isNewChatModalOpen}
+                friends={friends}
+                onClose={handleCloseModal}
+                onStartChat={handleStartChat}
+            />
         </div>
     );
 };
