@@ -25,4 +25,5 @@ postRouter.post('/comments', handleCreateComment);
 postRouter.post('/posts/:id/likePost', handleLikePost);
 postRouter.post('/posts/:id/savePost', handleSavePost);
 postRouter.get('/posts/saved/:userId', handleGetSavedPost);
+
 export default postRouter;
