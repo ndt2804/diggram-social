@@ -13,7 +13,6 @@ import {
 export const updatePostController = async (req, res) => {
     const { id } = req.params;
     const postData = req.body;
-    12312
     try {
         const updatedPost = await updatePostService(id, postData);
         if (updatedPost) {

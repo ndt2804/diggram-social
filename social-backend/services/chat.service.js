@@ -50,13 +50,32 @@ export async function getChatService(userId) {
             return {
                 id: chat.id,
                 created_at: chat.created_at,
-                name: otherUser?.fullname || otherUser?.username || 'Unknown User',
+                fullname: otherUser?.fullname || 'Unknown User',
                 image_url: otherUser?.image_url,
                 userId: otherUserId
             };
         });
 
         return formattedChats;
+    } catch (e) {
+        console.error('Error in getChatService:', e);
+        throw new Error('Error fetching chats');
+    }
+}
+
+export async function getMessagesServices(chatId) {
+    try {
+        // Fetch chats
+        const { data: message, error: chatsError } = await supabase
+            .from('messages')
+            .select('*')
+            .or(`chat_id.eq.${chatId}`)
+        if (chatsError) {
+            console.error("Error fetching chats:", chatsError.message);
+            throw new Error("Failed to fetch chats.");
+        }
+
+        return message;
     } catch (e) {
         console.error('Error in getChatService:', e);
         throw new Error('Error fetching chats');
