@@ -19,10 +19,8 @@ export function AuthProvider({ children }) {
             const userCookie = getCookie('user');
             if (userCookie) {
                 const currentUser = JSON.parse(userCookie);
-                console.log("Current user:", currentUser);
                 setUser(currentUser);
                 setIsAuthenticated(true);
-                console.log("User authenticated");
                 return true;
             }
             console.log("No current user found");

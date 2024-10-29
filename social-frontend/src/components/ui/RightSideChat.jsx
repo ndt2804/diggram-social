@@ -10,7 +10,7 @@ const RightChat = ({ selectedContact, onMute, onGoToProfile, onDeleteConversatio
         <div className="w-1/3 border-l p-4 bg-red-200 border-4 border-red-500 overflow-y-auto">
             <div className="flex items-center mb-4">
                 <img
-                    src={selectedContact.avatar || 'default-avatar.png'}
+                    src={selectedContact.image_url || 'default-avatar.png'}
                     alt={selectedContact.fullname}
                     className="w-16 h-16 rounded-full mr-4"
                 />

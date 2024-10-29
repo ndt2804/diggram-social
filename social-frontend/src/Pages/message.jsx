@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import ContactList from '../components/ui/Contact';
 import ChatArea from '../components/ui/Chat';
 import RightChat from '../components/ui/RightSideChat';
-
 function MessageComponent() {
     const [contacts, setContacts] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);

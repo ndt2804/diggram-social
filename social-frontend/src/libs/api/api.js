@@ -62,8 +62,6 @@ export const signInAccount = async (email, password) => {
             email,
             password,
         });
-
-        console.log(`Login response: ${JSON.stringify(response.data)}`);
         const { accessToken, refreshToken, existingUser } = response.data;
         setCookie('accessToken', accessToken, { expires: 1, path: '/', secure: true, sameSite: 'None' });
         setCookie('refreshToken', refreshToken, { expires: 7, path: '/', secure: true, sameSite: 'None' });
@@ -213,8 +211,8 @@ export const getFriendUser = async () => {
     const userCookie = getCookie('user');
     const userId = JSON.parse(userCookie)?.id;
     try {
-        const response = await axiosPrivate.get(`${API_URL}friends?userId=${userId}`);
-        return response.data;
+        const response = await axiosPrivate.get(`friends?userId=${userId}`);
+        return response.data
     } catch (error) {
         console.error('Failed to get friends:', error);
         throw error;
@@ -234,13 +232,28 @@ export const createChat = async (userId, friendId) => {
         throw new Error('Error creating chat');
     }
 
-    return response.json();
-};
-export const getChat = async (userId) => {
-    const response = await axiosPrivate.get(`${API_URL}getChat/?userId=${userId}`);
     return response.data;
 };
-
+export const getChat = async () => {
+    const userCookie = getCookie('user');
+    const userId = JSON.parse(userCookie)?.id;
+    try {
+        const response = await axiosPrivate.get(`getChat/?userId=${userId}`);
+        return response.data
+    } catch (error) {
+        console.error('Failed to get friends:', error);
+        throw error;
+    }
+};
+export const getMessages = async (chatId) => {
+    try {
+        const response = await axiosPrivate.get(`getMessages/?chatId=${chatId}`);
+        return response.data
+    } catch (error) {
+        console.error('Failed to get chatId:', error);
+        throw error;
+    }
+};
 // ============================================================
 // COOKIE API
 // ============================================================

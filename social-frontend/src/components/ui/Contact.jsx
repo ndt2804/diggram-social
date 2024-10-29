@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { useCreateChat, useGetChats, useGetFriendUser } from '../../libs/react-query/react-query';
-import { useUserContext } from '../../context/auth.context'
 import ModalChat from './modal-chat';
 
-const ContactList = ({ contacts, onSelect, onStartNewChat }) => {
-    const { user } = useUserContext();
+const ContactList = ({ onSelect, onStartNewChat }) => {
     const { data: friends, isLoading, error } = useGetFriendUser();
-
-    const { data: chats, isLoading: isChatsLoading } = useGetChats(user?.id);
-    console.log('chats', chats);
+    const { data: chats, isLoading: isChatsLoading } = useGetChats();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all');
     const { mutate: createChat } = useCreateChat();
     const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+
 
     const handleNewChat = () => {
         setIsNewChatModalOpen(true);
@@ -23,7 +20,6 @@ const ContactList = ({ contacts, onSelect, onStartNewChat }) => {
     };
 
     const handleStartChat = (selectedUser, initialMessage) => {
-        // Gọi hàm từ prop để thông báo cho component cha
         onStartNewChat(selectedUser, initialMessage);
         setIsNewChatModalOpen(false);
     };

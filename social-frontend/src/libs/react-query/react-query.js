@@ -20,6 +20,8 @@ import {
     savePost,
     getSavedPost,
     createChat,
+    getChat,
+    getMessages,
 } from "../api/api"
 
 // ============================================================
@@ -337,10 +339,19 @@ export const useCreateChat = () => {
 export const useGetChats = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_CHATS],
-        queryFn: getFriendUser,
+        queryFn: getChat,
     });
 };
+export const useGetMessages = (chatId) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_MESSAGES, chatId], // Include chatId in the key
+        queryFn: () => getMessages(chatId), // Wrap in a function
+        enabled: !!chatId, // Run the query only if chatId is truthy
+    });
+};
+
 export const QUERY_KEYS = {
+    GET_MESSAGES: 'getMessages',
     GET_ALL_POSTS: 'getAllPosts',
     GET_POST_OF_USER: 'getPostOfUser',
     GET_POST_BY_ID: 'getPostById',
