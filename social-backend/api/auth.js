@@ -11,7 +11,9 @@ import {
     resetPassword,
     updatePassword,
     verifyEmail,
-    signOutUser
+    signOutUser,
+    searchUserController,
+    getSuggestedUsersController,
 } from "../controllers/auth.controller.js";
 
 const authRouter = Router();
@@ -19,11 +21,12 @@ const authRouter = Router();
 authRouter.post("/auth/register", registerUser);
 authRouter.post("/auth/login", logInUser);
 authRouter.post("/auth/sign-out", auth, signOutUser);
+authRouter.get("/search", searchUserController);
+authRouter.get("/suggested", getSuggestedUsersController);
 
 authRouter.post('/refresh-token', refreshToken)
 
 authRouter.get('/user/:slug', getUser)
-
 authRouter.put('/user/:slug/settings', auth, updateUser)
 authRouter.put('/user/:slug/changePassword', auth, changePassword)
 authRouter.post('/resetPassword', resetPassword)

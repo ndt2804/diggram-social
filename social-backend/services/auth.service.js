@@ -301,4 +301,32 @@ export const emailServices = async (email, hashEmail) => {
   });
   return info
 
-} 
+}
+export const searchUser = async (query) => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .ilike('username', `%${query}%`);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error searching user:', error);
+    throw error;
+  }
+};
+export const getSuggestedUsers = async () => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .limit(5);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};

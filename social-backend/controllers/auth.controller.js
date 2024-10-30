@@ -8,7 +8,9 @@ import {
   changePasswordUserService,
   updatePasswordService,
   resetPasswordService,
-  checkEmailService
+  checkEmailService,
+  searchUser,
+  getSuggestedUsers,
 } from "../services/auth.service.js";
 
 export async function registerUser(req, res) {
@@ -126,3 +128,22 @@ export async function resetPassword(req, res) {
     return res.status(500).send((error));
   }
 }
+
+export const searchUserController = async (req, res) => {
+  const { query } = req.query; // Lấy từ query string
+
+  try {
+    const users = await searchUser(query);
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error searching users', error: error.message });
+  }
+};
+export const getSuggestedUsersController = async (req, res) => {
+  try {
+    const users = await getSuggestedUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
