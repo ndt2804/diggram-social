@@ -102,6 +102,18 @@ export const getUserByUsername = async (username) => {
     return response.data;
 }
 
+
+export const searchUser = async (query) => {
+    const { data } = await axiosPrivate.get(`search`, {
+        params: { query },
+    });
+    return data;
+};
+export const suggestedUser = async (query) => {
+    const { data } = await axiosPrivate.get(`suggested`);
+    return data;
+};
+
 // ============================================================
 // POST API
 // ============================================================
@@ -136,7 +148,8 @@ export const getSinglePost = async (postId) => {
     }
 };
 
-export const createPost = async (userId, caption, imageFile) => {
+export const createPost = async ({ userId, caption, imageFile }) => {
+
     try {
         const formData = new FormData();
         formData.append('userId', userId);
@@ -144,17 +157,19 @@ export const createPost = async (userId, caption, imageFile) => {
         if (imageFile) {
             formData.append('image', imageFile);
         }
-        const response = await axiosPrivate.post(`${API_URL}createPost`, formData, {
+        const response = await axiosPrivate.post(`createPost`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+
         return response.data;
     } catch (error) {
         console.error('Create Post failed:', error.response ? error.response.data : error.message);
         throw error;
     }
 };
+
 
 export const updatePost = async (postId, postData) => {
     try {

@@ -8,6 +8,7 @@ dayjs.extend(relativeTime);
 
 const ChatArea = ({ chat, toggleRightChat }) => {
     const { user } = useUserContext();
+    console.log('user in chat', user);
     const [messages, setMessages] = useState([]);
     console.log(messages);
     const [input, setInput] = useState('');

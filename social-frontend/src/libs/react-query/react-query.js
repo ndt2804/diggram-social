@@ -22,6 +22,8 @@ import {
     createChat,
     getChat,
     getMessages,
+    searchUser,
+    suggestedUser,
 } from "../api/api"
 
 // ============================================================
@@ -104,7 +106,19 @@ export const useGetFriendUser = () => {
         queryFn: getFriendUser,
     });
 };
-
+export const useSearchUsers = (searchTerm) => {
+    return useQuery({
+        queryKey: ['searchUsers', searchTerm],
+        queryFn: () => searchUser(searchTerm),
+        enabled: !!searchTerm,
+    });
+};
+export const useSuggestedUsers = () => {
+    return useQuery({
+        queryKey: ['suggestedUsers'],
+        queryFn: suggestedUser,
+    });
+};
 // ============================================================
 // POST QUERIES
 // ============================================================

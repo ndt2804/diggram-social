@@ -1,4 +1,4 @@
-import AuthService from "../../services/auth.service";
+import { useCreateUserAccount } from "../../libs/react-query/react-query";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,18 +10,20 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { mutate: createUserAccount, isLoading } = useCreateUserAccount({
+        onSuccess: () => {
+            toast.success("User registered successfully");
+            navigate("/sign-in");
+        },
+        onError: (error) => {
+            toast.error(error.response.data || "Registration failed");
+        },
+    });
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            const res = await AuthService.register(
-                {
-                    fullname,
-                    email,
-                    username,
-                    password,
-                }
-            );
+            createUserAccount({ fullname, email, username, password });
             setLoading(false);
             toast.success("User Register Successfully");
             navigate("/sign-in");
