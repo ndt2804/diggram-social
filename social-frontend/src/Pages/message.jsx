@@ -68,7 +68,7 @@ function MessageComponent() {
                         isRightChatVisible={isRightChatVisible}
                     />
                 ) : (
-                    <div className="h-full flex items-center justify-center text-gray-500">
+                    <div className="h-full flex items-center justify-center text-gray-500 mx-auto">
                         Select a chat or start a new one
                     </div>
                 )}

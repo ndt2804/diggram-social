@@ -3,7 +3,7 @@ import supabase from "./supabase.js";
 const initSocket = (httpServer) => {
     const io = new Server(httpServer, {
         cors: {
-            origin: 'http://localhost:5173', // Adjust as necessary
+            origin: 'http://localhost:5173',
             methods: ['GET', 'POST'],
             credentials: true,
         },
@@ -16,6 +16,9 @@ const initSocket = (httpServer) => {
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected:', socket.id);
+        });
+        socket.on('receive_message', (data) => {
+            console.log('New message received:', data);
         });
     });
 

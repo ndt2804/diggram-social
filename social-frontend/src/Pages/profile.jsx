@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useGetPostOfUser, useGetFriendUser, useGetUserByUsername } from '../libs/react-query/react-query';
 import { useUserContext } from '../context/auth.context';
+
 const favoriteImages = [
     'https://i.pinimg.com/originals/3d/54/a3/3d54a3afe927891ec41fec08f2c563d8.jpg',
     // ... other favorite images
@@ -9,16 +10,16 @@ const favoriteImages = [
 
 const Me = () => {
     const { username } = useParams();
+    const { data: friends, isLoading, error } = useGetFriendUser();
     const { user: currentUser } = useUserContext();
     const { data: profileUser, isLoading: isLoadingUser, isError: isErrorUser } = useGetUserByUsername(username);
     const { data: posts, isLoading: isLoadingPosts, isError: isErrorPosts } = useGetPostOfUser(profileUser?.id);
-
+    const isExists = friends?.some(user => user.id === profileUser?.id);
+    if (isLoading) return <div>Loading posts...</div>;
+    if (error) return <div>Error loading posts</div>;
     if (isLoadingUser || isLoadingPosts) return <div>Loading...</div>;
     if (isErrorUser || isErrorPosts || !profileUser) return <div>Error loading profile or posts</div>;
-
     const isOwnProfile = currentUser && currentUser.username === profileUser.username;
-    console.log('isOwnProfile', isOwnProfile);
-
     if (isLoadingPosts) return <div>Loading posts...</div>;
     if (isErrorPosts) return <div>Error loading posts</div>;
 
@@ -47,13 +48,28 @@ const Me = () => {
                             </>
                         ) : (
                             <>
-                                <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Follow</button>
-                                <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded ml-2 hover:bg-gray-400">Message</button>
+                                {
+                                    isExists ? (
+                                        <>
+
+                                            <button className="bg-blue-500 text-white py-2 px-4 rounded ml-2 hover:bg-blue-600">Friends</button>
+
+                                            {/* <FriendButton isFriend={isFriend} onUnfriend={handleUnfriend} /> */}
+                                            <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded ml-2 hover:bg-gray-400">Message</button>
+                                        </>
+
+                                    ) : (<>
+                                        {/* <FriendButton isFriend={isFriend} onUnfriend={handleUnfriend} /> */}
+                                        <button className="bg-blue-500 text-white py-2 px-4 rounded ml-2 hover:bg-blue-600">Add Friend</button>
+                                        <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded ml-2 hover:bg-gray-400">Message</button>
+                                    </>)
+                                }
+
                             </>
                         )}
                     </div>
                     <div className="mt-4">
-                        <span className="mx-4">Posts: {profileUser.posts_count || 0}</span>
+                        <span className="mx-4">Posts: {posts.length || 0}</span>
                         <span className="mx-4">Followers: {profileUser.followers_count || 0}</span>
                         <span className="mx-4">Following: {profileUser.following_count || 0}</span>
                     </div>
@@ -83,3 +99,40 @@ const Me = () => {
 }
 
 export default Me;
+// const FriendButton = ({ isFriend, onUnfriend }) => {
+//     const [showConfirm, setShowConfirm] = useState(false);
+
+//     const handleUnfriend = () => {
+//         onUnfriend(); // Gọi hàm hủy kết bạn
+//         setShowConfirm(false); // Đóng hộp thoại sau khi hủy
+//     };
+
+//     return (
+//         <div>
+//             <button
+//                 className="bg-blue-500 text-white py-2 px-4 rounded ml-2 hover:bg-blue-600"
+//                 onClick={() => setShowConfirm(true)}
+//             >
+//                 {isFriend ? 'Friends' : 'Add Friend'}
+//             </button>
+
+//             {showConfirm && (
+//                 <div className="confirm-box bg-white shadow-md p-4 rounded mt-2">
+//                     <p>Bạn có chắc chắn muốn hủy kết bạn?</p>
+//                     <button
+//                         className="bg-gray-300 py-1 px-2 rounded hover:bg-red-600"
+//                         onClick={handleUnfriend}
+//                     >
+//                         Hủy kết bạn
+//                     </button>
+//                     <button
+//                         className="bg-gray-300 text-black py-1 px-2 rounded hover:bg-gray-400 ml-2"
+//                         onClick={() => setShowConfirm(false)}
+//                     >
+//                         Hủy
+//                     </button>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };

@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
     };
     const logout = async (expired = false) => {
         try {
-            await signOut(); // Gọi mutation logout
+            await signOut();
             deleteCookie('accessToken');
             deleteCookie('refreshToken');
             deleteCookie('user');
@@ -49,10 +49,10 @@ export function AuthProvider({ children }) {
     };
     useEffect(() => {
         const cookieFallback = getCookie("user");
+        const currentPath = window.location.pathname;
         if (
-            cookieFallback === "[]" ||
-            cookieFallback === null ||
-            cookieFallback === undefined
+            (cookieFallback === "[]" || cookieFallback === null || cookieFallback === undefined) &&
+            currentPath !== "/register" && currentPath !== "/sign-up"
         ) {
             navigate("/sign-in");
         }

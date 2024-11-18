@@ -28,11 +28,11 @@ const ChatArea = ({ chat, toggleRightChat }) => {
     }, [data]);
 
     useEffect(() => {
+
         const handleReceiveMessage = (data) => {
             setMessages((prevMessages) => [...prevMessages, data]);
             scrollToBottom();
         };
-
         socket.on('receive_message', handleReceiveMessage);
         return () => {
             socket.off('receive_message', handleReceiveMessage);
@@ -65,7 +65,9 @@ const ChatArea = ({ chat, toggleRightChat }) => {
         return <div>Error fetching messages.</div>;
     }
     if (!chat) {
-        return <div className="flex-1 flex items-center justify-center">Select a chat or start a new one</div>;
+        return (
+
+            <div className="flex-1 flex items-center justify-center mx-auto">Select a chat or start a new one</div>);
     }
 
     return (
@@ -85,7 +87,7 @@ const ChatArea = ({ chat, toggleRightChat }) => {
                     <div key={index} className={`flex ${msg.sender_id === user.id ? 'justify-end' : 'justify-start'}`}>
                         <div className={`p-3 rounded-lg max-w-xs ${msg.sender_id === user.id ? 'bg-blue-500' : 'bg-gray-100'}`}>
                             <p>{msg.messages}</p>
-                            <p className="text-xs text-right mt-1">                              {dayjs(msg.created_at).fromNow()} </p>
+                            <p className="text-xs text-right mt-1"> {dayjs(msg.created_at).fromNow()} </p>
                         </div>
                     </div>
                 ))}
